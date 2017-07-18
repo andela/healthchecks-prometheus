@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 import os
 import warnings
-from decouple import config
-import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -111,13 +109,6 @@ if os.environ.get("DB") == "mysql":
             'TEST': {'CHARSET': 'UTF8'}
         }
     }
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=True, cast=bool)
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL')
-    )
-}
 
 LANGUAGE_CODE = 'en-us'
 
