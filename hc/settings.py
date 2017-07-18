@@ -111,13 +111,7 @@ if os.environ.get("DB") == "mysql":
             'TEST': {'CHARSET': 'UTF8'}
         }
     }
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=True, cast=bool)
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL')
-    )
-}
+
 
 LANGUAGE_CODE = 'en-us'
 
