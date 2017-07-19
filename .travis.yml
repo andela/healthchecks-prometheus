@@ -11,9 +11,9 @@ env:
   - DB=postgres
 addons:
   postgresql: "9.4"
-notifications:
-    slack: andela:wU3S6GumPwGIfPkqbzuQGrKH
 script:
   - coverage run --omit=*/tests/* --source=hc manage.py test
 after_success: coveralls
 cache: pip
+notifications:
+    slack: andela:wU3S6GumPwGIfPkqbzuQGrKH
