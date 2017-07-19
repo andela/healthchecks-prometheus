@@ -138,7 +138,9 @@ STATICFILES_FINDERS = (
 #STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 COMPRESS_OFFLINE = True
 
-EMAIL_BACKEND = "djmail.backends.default.EmailBackend"
+# EMAIL_BACKEND = "djmail.backends.default.EmailBackend"
+EMAIL_BACKEND = "sgbackend.SendGridBackend"
+SENDGRID_API_KEY = "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"
 
 # Discord integration -- override these in local_settings
 DISCORD_CLIENT_ID = None
