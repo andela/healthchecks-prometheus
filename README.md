@@ -1,8 +1,7 @@
 # healthchecks
 
-[![Build Status](https://travis-ci.org/healthchecks/healthchecks.svg?branch=master)](https://travis-ci.org/healthchecks/healthchecks)
-[![Coverage Status](https://coveralls.io/repos/healthchecks/healthchecks/badge.svg?branch=master&service=github)](https://coveralls.io/github/healthchecks/healthchecks?branch=master)
-
+[![Build Status](https://travis-ci.org/andela/healthchecks-prometheus.svg?branch=develop)](https://travis-ci.org/andela/healthchecks-prometheus)
+[![Coverage Status](https://coveralls.io/repos/github/andela/healthchecks-prometheus/badge.svg?branch=develop)](https://coveralls.io/github/andela/healthchecks-prometheus?branch=develop)
 
 ![Screenshot of Welcome page](/stuff/screenshots/welcome.png?raw=true "Welcome Page")
 
