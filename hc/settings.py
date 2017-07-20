@@ -16,7 +16,7 @@ import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-HOST = "localhost"
+HOST = os.environ.get('BASE_IRI', 'localhost')
 SECRET_KEY = "---"
 DEBUG = True
 ALLOWED_HOSTS = []
