@@ -10,14 +10,14 @@
         <div class="col-sm-8">
         <h1>
         {% if request.team == request.user.profile %}
-            My Checks
+            Failed Checks
         {% else %}
             {{ request.team.team_name }}
         {% endif %}
         </h1>
       </div>
       <div class="col-sm-4">
-              <a href="{% url 'hc-down-checks' %}" class="btn btn-danger btn-lg">Failed Jobs</a>
+              <a href="{% url 'hc-checks' %}" class="btn btn-primary btn-lg">My Checks</a>
       </div>
     </div>
     {% if tags %}
@@ -43,14 +43,6 @@
     {% else %}
     <div class="alert alert-info">You don't have any checks yet.</div>
     {% endif %}
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <form method="post" action="{% url 'hc-add-check' %}" class="text-center">
-            {% csrf_token %}
-            <input type="submit" class="btn btn-primary btn-lg" value="Add Check">
-        </form>
     </div>
 </div>
 
