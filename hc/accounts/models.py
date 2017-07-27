@@ -24,6 +24,7 @@ class Profile(models.Model):
     token = models.CharField(max_length=128, blank=True)
     api_key = models.CharField(max_length=128, blank=True)
     current_team = models.ForeignKey("self", null=True)
+    period = models.IntegerField(default=30)
 
     def __str__(self):
         return self.team_name or self.user.email
@@ -60,7 +61,8 @@ class Profile(models.Model):
     def send_report(self):
         # reset next report date first:
         now = timezone.now()
-        self.next_report_date = now + timedelta(days=30)
+        days = self.period
+        self.next_report_date = now + timedelta(seconds=days)
         self.save()
 
         token = signing.Signer().sign(uuid.uuid4())
