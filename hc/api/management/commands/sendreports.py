@@ -47,6 +47,9 @@ class Command(BaseCommand):
 
             num_updated = qq.update(next_report_date=(now+timedelta(days=profile.period)))
 
+            if num_pinged_checks(profile) == 0:
+                continue
+
             self.stdout.write(self.tmpl % profile.user.email)
             profile.send_report()
             sent += 1
