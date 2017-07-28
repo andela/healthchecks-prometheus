@@ -15,6 +15,8 @@ class EmailPasswordForm(forms.Form):
 
 class ReportSettingsForm(forms.Form):
     reports_allowed = forms.BooleanField(required=False)
+    choices = [('monthly', 'Monthly'), ('weekly', 'Weekly'), ('daily', 'Daily')]
+    period = forms.ChoiceField(choices=choices, widget=forms.RadioSelect())
 
 
 class SetPasswordForm(forms.Form):
