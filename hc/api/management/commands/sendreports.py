@@ -24,12 +24,12 @@ class Command(BaseCommand):
             action='store_true',
             dest='loop',
             default=False,
-            help='Keep running indefinitely in a 300 second wait loop',
+            help='Keep running indefinitely in a 1 day wait loop',
         )
 
     def handle_one_run(self):
         now = timezone.now()
-        period_before = now - timedelta(seconds=1)
+        period_before = now - timedelta(days=1)
 
         report_due = Q(next_report_date__lt=now)
         report_not_scheduled = Q(next_report_date__isnull=True)
@@ -45,7 +45,7 @@ class Command(BaseCommand):
             qq = qq.filter(id=profile.id,
                            next_report_date=profile.next_report_date)
 
-            num_updated = qq.update(next_report_date=(now+timedelta(seconds=profile.period)))
+            num_updated = qq.update(next_report_date=(now+timedelta(days=profile.period)))
 
             self.stdout.write(self.tmpl % profile.user.email)
             profile.send_report()
@@ -64,4 +64,4 @@ class Command(BaseCommand):
             formatted = timezone.now().isoformat()
             self.stdout.write("-- MARK %s --" % formatted)
 
-            time.sleep(30)
+            time.sleep(86400)

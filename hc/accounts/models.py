@@ -62,7 +62,7 @@ class Profile(models.Model):
         # reset next report date first:
         now = timezone.now()
         days = self.period
-        self.next_report_date = now + timedelta(seconds=days)
+        self.next_report_date = now + timedelta(days=days)
         self.save()
 
         token = signing.Signer().sign(uuid.uuid4())
