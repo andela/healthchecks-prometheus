@@ -9,7 +9,7 @@ from hc.api.models import Check
 
 def notify(check_id, stdout):
     check = Check.objects.get(id=check_id)
-    xyz = check.user_nagging()
+    nag = check.user_nagging()
     tmpl = "\nSending alert, status=%s, code=%s\n"
     stdout.write(tmpl % (check.status, check.code))
     errors = check.send_alert()
