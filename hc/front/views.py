@@ -24,6 +24,8 @@ from hc.front.forms import (AddWebhookForm, NameTagsForm,
 from pytz import all_timezones
 from pytz.exceptions import UnknownTimeZoneError
 
+import _thread
+
 
 # from itertools recipes:
 def pairwise(iterable):
@@ -177,8 +179,10 @@ def update_timeout(request, code):
         form = TimeoutForm(request.POST)
         if not form.is_valid():
             return HttpResponseBadRequest()
-
         check.kind = "simple"
+
+        # add user ability to set up nag time.
+        check.nag_time = td(seconds=int(request.POST['nag']))
         check.timeout = td(seconds=form.cleaned_data["timeout"])
         check.grace = td(seconds=form.cleaned_data["grace"])
     elif kind == "cron":
