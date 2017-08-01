@@ -24,7 +24,6 @@ from hc.front.forms import (AddWebhookForm, NameTagsForm,
 from pytz import all_timezones
 from pytz.exceptions import UnknownTimeZoneError
 
-import _thread
 
 
 # from itertools recipes:
