@@ -69,7 +69,8 @@ def my_checks(request):
         "down_tags": down_tags,
         "grace_tags": grace_tags,
         "ping_endpoint": settings.PING_ENDPOINT,
-        "timezones": all_timezones
+        "timezones": all_timezones,
+        "current_page": check_filter if check_filter is not None else None
     }
 
     return render(request, "front/my_checks.html", ctx)
