@@ -4,9 +4,7 @@ import hashlib
 import json
 import uuid
 from datetime import datetime, timedelta as td
-import time
 
-import schedule
 from croniter import croniter
 from django.conf import settings
 from django.core.checks import Warning
@@ -23,6 +21,14 @@ STATUSES = (
     ("new", "New"),
     ("paused", "Paused")
 )
+
+STATUS = (
+    ("up", "Up"),
+    ("down", "Down"),
+    ("new", "New"),
+    ("nag", "Nag")
+)
+
 DEFAULT_TIMEOUT = td(days=1)
 DEFAULT_GRACE = td(hours=1)
 CHECK_KINDS = (("simple", "Simple"),
@@ -105,27 +111,6 @@ class Check(models.Model):
 
     def get_nagging_status(self):
         return self.nagging
-
-    @staticmethod
-    def get_sec(time_str):
-        time_str = str(time_str)
-        h, m, s = time_str.split(':')
-        return int(h) * 3600 + int(m) * 60 + int(s)
-
-    def user_nagging(self):
-        down_period = self.grace + self.timeout + self.nag_time
-        schedule.every(self.get_sec(self.nag_time)).seconds.do(self.send_alert)
-        self.nagging = False
-        self.save()
-        while True:
-            if self.status == "up":
-                break
-            if (timezone.now() - self.last_ping) > down_period and self.status == "down":
-                self.nagging = True
-                self.save()
-                schedule.run_pending()
-
-            time.sleep(1)
 
     def get_grace_start(self):
         """ Return the datetime when grace period starts. """
