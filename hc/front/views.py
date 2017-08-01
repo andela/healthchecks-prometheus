@@ -35,12 +35,20 @@ def pairwise(iterable):
 
 @login_required
 def my_checks(request):
+    check_filter = request.GET.get("status")
     q = Check.objects.filter(user=request.team.user).order_by("created")
     checks = list(q)
-
+    filtered_checks = []
+    if check_filter is None:
+        filtered_checks = checks
+    elif check_filter == 'all':
+        filtered_checks = checks
+    else:
+        filtered_checks = [check for check in checks if check.get_status()
+                           == check_filter]
     counter = Counter()
     down_tags, grace_tags = set(), set()
-    for check in checks:
+    for check in filtered_checks:
         status = check.get_status()
         for tag in check.tags_list():
             if tag == "":
@@ -55,7 +63,7 @@ def my_checks(request):
 
     ctx = {
         "page": "checks",
-        "checks": checks,
+        "checks": filtered_checks,
         "now": timezone.now(),
         "tags": counter.most_common(),
         "down_tags": down_tags,
@@ -65,47 +73,6 @@ def my_checks(request):
     }
 
     return render(request, "front/my_checks.html", ctx)
-
-
-@login_required
-def down_checks(request):
-    q = Check.objects.filter(user=request.team.user).order_by("created")
-    checks = list(q)
-    failed_checks = []
-    for check in checks:
-        if check.get_status() == 'down':
-            print("check", )
-            failed_checks.append(check)
-    counter = Counter()
-    down_tags, grace_tags = set(), set()
-
-    for check in failed_checks:
-        status = check.get_status()
-        print(status)
-        if status == 'down':
-            for tag in check.tags_list():
-                if tag == "":
-                    continue
-
-                counter[tag] += 1
-
-                if status == "down":
-                    down_tags.add(tag)
-                elif check.in_grace_period():
-                    grace_tags.add(tag)
-
-    ctx = {
-        "page": "checks",
-        "checks": failed_checks,
-        "now": timezone.now(),
-        "tags": counter.most_common(),
-        "down_tags": down_tags,
-        "grace_tags": grace_tags,
-        "ping_endpoint": settings.PING_ENDPOINT,
-        "timezones": all_timezones
-    }
-
-    return render(request, "front/down_checks.html", ctx)
 
 
 def _welcome_check(request):
