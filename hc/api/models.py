@@ -68,7 +68,7 @@ class Check(models.Model):
     last_ping = models.DateTimeField(null=True, blank=True)
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
-    nag_time = models.DurationField(default=DEFAULT_TIMEOUT)
+    nag_time = models.DurationField(default=td(hours=1))
     nagging = models.BooleanField(default=False)
 
     def name_then_code(self):
@@ -106,9 +106,15 @@ class Check(models.Model):
     def get_nagging_status(self):
         return self.nagging
 
+    @staticmethod
+    def get_sec(time_str):
+        time_str = str(time_str)
+        h, m, s = time_str.split(':')
+        return int(h) * 3600 + int(m) * 60 + int(s)
+
     def user_nagging(self):
         down_period = self.grace + self.timeout + self.nag_time
-        schedule.every(10).seconds.do(self.send_alert)
+        schedule.every(self.get_sec(self.nag_time)).seconds.do(self.send_alert)
         self.nagging = False
         self.save()
         while True:
