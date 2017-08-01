@@ -115,12 +115,10 @@ class Check(models.Model):
             print((timezone.now() - self.last_ping) > down_period)
             print(self.status)
             if self.status == "up":
-                print("Break")
                 break
             if (timezone.now() - self.last_ping) > down_period and self.status == "down":
                 self.nagging = True
                 self.save()
-                print("Now Nagging")
                 schedule.run_pending()
 
             time.sleep(1)
