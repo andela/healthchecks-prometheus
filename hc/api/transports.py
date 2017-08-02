@@ -58,8 +58,8 @@ class Email(Transport):
                 nag_status = True
             elif (now - check.last_ping) < down_period:
                 nag_status = False
-        except Exception:
-            print(Exception)
+        except Exception as e:
+            print(str(e))
 
         ctx = {
             "check": check,
