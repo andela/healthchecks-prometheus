@@ -161,11 +161,25 @@ def profile(request):
         elif "show_api_key" in request.POST:
             show_api_key = True
         elif "update_reports_allowed" in request.POST:
-            form = ReportSettingsForm(request.POST)
+            form = ReportSettingsForm(request.POST, initial={'period':'monthly'})
             if form.is_valid():
                 profile.reports_allowed = form.cleaned_data["reports_allowed"]
+                interval = form.cleaned_data["period"]
+
+                if interval == 'daily':
+                    profile.period = 1
+                elif interval == 'weekly':
+                    profile.period = 7
+                else:
+                    profile.period = 30
+
                 profile.save()
-                messages.success(request, "Your settings have been updated!")
+            else:
+                profile.period = 0
+                profile.reports_allowed = False
+                profile.save()
+
+            messages.success(request, "Your settings have been updated!")
         elif "invite_team_member" in request.POST:
             if not profile.team_access_allowed:
                 return HttpResponseForbidden()

@@ -10,24 +10,14 @@
         <div class="col-sm-8">
         <h1>
         {% if request.team == request.user.profile %}
-          My Checks / {{ current_page|capfirst }}
+            Failed Checks
         {% else %}
             {{ request.team.team_name }}
         {% endif %}
         </h1>
       </div>
       <div class="col-sm-4">
-        <div class="dropdown">
-          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Customize Dashboard
-          <span class="caret"></span></button>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'hc-checks' %}?status=all">All Jobs</a></li>
-            <li><a href="{% url 'hc-checks' %}?status=new">New Jobs</a></li>
-            <li><a href="{% url 'hc-checks' %}?status=up">Up Jobs</a></li>
-            <li><a href="{% url 'hc-checks' %}?status=paused">Paused</a></li>
-            <li><a href="{% url 'hc-checks' %}?status=down">Failed Jobs</a></li>
-          </ul>
-        </div>
+              <a href="{% url 'hc-checks' %}" class="btn btn-primary btn-lg">My Checks</a>
       </div>
     </div>
     {% if tags %}
@@ -53,14 +43,6 @@
     {% else %}
     <div class="alert alert-info">You don't have any checks yet.</div>
     {% endif %}
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <form method="post" action="{% url 'hc-add-check' %}" class="text-center">
-            {% csrf_token %}
-            <input type="submit" class="btn btn-primary btn-lg" value="Add Check">
-        </form>
     </div>
 </div>
 
@@ -131,7 +113,6 @@
                 <input type="hidden" name="kind" value="simple" />
                 <input type="hidden" name="timeout" id="update-timeout-timeout" />
                 <input type="hidden" name="grace" id="update-timeout-grace" />
-                <input type="hidden" name="nag" id="update-timeout-nag" />
 
                 <div class="modal-body">
                     <div class="update-timeout-info text-center">
@@ -166,23 +147,6 @@
 
                     <div id="grace-slider"></div>
 
-                    <div class="update-timeout-info text-center">
-                        <span
-                            class="update-timeout-label"
-                            data-toggle="tooltip"
-                            title="When check is down, how much time to wait until nagging alert is sent">
-                            Nag Time
-                        </span>
-                        <span
-                            id="nag-slider-value"
-                            class="update-timeout-nag" style="font-size: 22px; display: inline-block; width: 100px;
-                            text-align: left;white-space: nowrap;">
-                            1 day
-                        </span>
-                    </div>
-
-                    <div id="nag-slider" style="margin: 20px 50px 80px 50px;"></div>
-
                     <div class="update-timeout-terms">
                         <p>
                             <span>Period</span>
@@ -191,10 +155,6 @@
                         <p>
                             <span>Grace Time</span>
                             When a check is late, how much time to wait until alert is sent.
-                        </p>
-                        <p>
-                            <span>Nag Time</span>
-                            When a check is down, how much time to wait until nagging alert is sent.
                         </p>
                     </div>
                 </div>
