@@ -51,11 +51,18 @@ class Email(Transport):
             if not check.user.profile.team_access_allowed:
                 show_upgrade_note = True
 
+        down_period = check.grace + check.timeout + check.nag_time
+        if (timezone.now() - check.last_ping) > down_period:
+            nag_status = True
+        elif (timezone.now() - check.last_ping) < down_period:
+            nag_status = False
+
         ctx = {
             "check": check,
             "checks": self.checks(),
             "now": timezone.now(),
-            "show_upgrade_note": show_upgrade_note
+            "show_upgrade_note": show_upgrade_note,
+            "nag_status": nag_status,
         }
         emails.alert(self.channel.value, ctx)
 
