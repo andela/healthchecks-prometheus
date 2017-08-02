@@ -50,12 +50,16 @@ class Email(Transport):
         if settings.USE_PAYMENTS and check.status == "up":
             if not check.user.profile.team_access_allowed:
                 show_upgrade_note = True
-
+        now = timezone.now()
         down_period = check.grace + check.timeout + check.nag_time
-        if (timezone.now() - check.last_ping) > down_period:
-            nag_status = True
-        elif (timezone.now() - check.last_ping) < down_period:
-            nag_status = False
+        nag_status = False
+        try:
+            if (now - check.last_ping) > down_period:
+                nag_status = True
+            elif (now - check.last_ping) < down_period:
+                nag_status = False
+        except Exception:
+            print(Exception)
 
         ctx = {
             "check": check,
