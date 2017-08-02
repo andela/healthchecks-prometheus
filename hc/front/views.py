@@ -25,6 +25,7 @@ from pytz import all_timezones
 from pytz.exceptions import UnknownTimeZoneError
 
 
+
 # from itertools recipes:
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
@@ -177,8 +178,10 @@ def update_timeout(request, code):
         form = TimeoutForm(request.POST)
         if not form.is_valid():
             return HttpResponseBadRequest()
-
         check.kind = "simple"
+
+        # add user ability to set up nag time.
+        check.nag_time = td(seconds=int(request.POST['nag']))
         check.timeout = td(seconds=form.cleaned_data["timeout"])
         check.grace = td(seconds=form.cleaned_data["grace"])
     elif kind == "cron":
