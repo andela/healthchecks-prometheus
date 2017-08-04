@@ -50,12 +50,23 @@ class Email(Transport):
         if settings.USE_PAYMENTS and check.status == "up":
             if not check.user.profile.team_access_allowed:
                 show_upgrade_note = True
+        now = timezone.now()
+        down_period = check.grace + check.timeout + check.nag_time
+        nag_status = False
+        try:
+            if (now - check.last_ping) > down_period:
+                nag_status = True
+            elif (now - check.last_ping) < down_period:
+                nag_status = False
+        except Exception as e:
+            print(str(e))
 
         ctx = {
             "check": check,
             "checks": self.checks(),
             "now": timezone.now(),
-            "show_upgrade_note": show_upgrade_note
+            "show_upgrade_note": show_upgrade_note,
+            "nag_status": nag_status,
         }
         emails.alert(self.channel.value, ctx)
 
