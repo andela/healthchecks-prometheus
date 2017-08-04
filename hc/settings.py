@@ -137,7 +137,9 @@ STATICFILES_FINDERS = (
 )
 COMPRESS_OFFLINE = True
 
-EMAIL_BACKEND = "djmail.backends.default.EmailBackend"
+#EMAIL_BACKEND = "djmail.backends.default.EmailBackend"
+EMAIL_BACKEND = "sgbackend.SendGridBackend"
+SENDGRID_API_KEY = "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"
 
 # Discord integration -- override these in local_settings
 DISCORD_CLIENT_ID = None
