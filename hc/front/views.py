@@ -4,6 +4,7 @@ from datetime import datetime, timedelta as td
 from itertools import tee
 
 import requests
+from random import randint
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -20,7 +21,7 @@ from hc.api.models import (DEFAULT_GRACE, DEFAULT_TIMEOUT, Channel, Check,
                            Ping, Notification)
 from hc.front.forms import (AddWebhookForm, NameTagsForm,
                             TimeoutForm, AddUrlForm, AddPdForm, AddEmailForm,
-                            AddOpsGenieForm, CronForm)
+                            AddOpsGenieForm, CronForm, AddSMSForm)
 from pytz import all_timezones
 from pytz.exceptions import UnknownTimeZoneError
 
@@ -402,8 +403,46 @@ def add_email(request):
         form = AddEmailForm()
 
     ctx = {"page": "channels", "form": form}
-    return render(request, "integrations/add_email.html", ctx)
+    return render(request, "integrations/add_email.html", ctx)\
 
+@login_required
+def add_sms(request):
+    if request.method == "POST":
+        form = AddSMSForm(request.POST)
+
+        if form.is_valid():
+            code = randint(1000, 9999)
+            channel = Channel(user=request.team.user, kind="sms", phone_code=code)
+            channel.value = form.cleaned_data["value"]
+            channel.save()
+
+            channel.assign_all_checks()
+            channel.verify_phone()
+            return redirect("hc-channels")
+    else:
+        form = AddSMSForm()
+
+    ctx = {"page": "channels", "form": form}
+    return render(request, "integrations/add_sms.html", ctx)
+
+@login_required
+def verify_phone(request):
+    if request.method == "POST":
+        verify_code = request.POST['verify_code']
+        phone = request.POST['phone']
+        code = request.POST['code']
+        phone_code = request.POST['phone_code']
+
+        channel = get_object_or_404(Channel, code=code)
+
+        if channel:
+            if phone_code == verify_code:
+                channel.phone_verified = True
+                channel.save()
+
+        print(code, verify_code, phone, phone_code, "$"*100)
+
+    return redirect("hc-channels")
 
 @login_required
 def add_webhook(request):
