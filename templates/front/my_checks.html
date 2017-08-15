@@ -34,7 +34,7 @@
 
     <div class="col-sm-4">
         <div class="dropdown">
-          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Departments
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Filter by Department
           <span class="caret"></span></button>
           <ul class="dropdown-menu">
               
@@ -75,16 +75,19 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        {% if team_admin_present is True and request.team.team_name  %}
-        <form method="post" action="{% url 'hc-add-check' %}" class="text-center">
-            {% csrf_token %}
-            <input type="submit" class="btn btn-primary btn-lg" value="Add Check">
-        </form>
-        {% else %}
-        <form method="post" action="{% url 'hc-add-check' %}" class="text-center">
-            {% csrf_token %}
-            <input type="submit" class="btn btn-primary btn-lg" value="Add Check">
-        </form>
+        {% if team_admin_present and request.user.profile.team_access_allowed %}
+            <form method="post" action="{% url 'hc-add-check' %}" class="text-center">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-primary btn-lg" value="Add Check">
+            </form>
+            
+        {% elif team_admin_present is False %}
+
+            <form method="post" action="{% url 'hc-add-check' %}" class="text-center">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-primary btn-lg" value="Add Check">
+            </form>
+
         {% endif %}
     </div>
 </div>
