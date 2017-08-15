@@ -17,12 +17,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.six.moves.urllib.parse import urlencode
 from hc.api.decorators import uuid_or_400
 from hc.api.models import (DEFAULT_GRACE, DEFAULT_TIMEOUT, Channel, Check,
-                           Ping, Notification)
+                           Ping, Notification, CheckMatrix)
 from hc.front.forms import (AddWebhookForm, NameTagsForm,
                             TimeoutForm, AddUrlForm, AddPdForm, AddEmailForm,
                             AddOpsGenieForm, CronForm)
 from pytz import all_timezones
 from pytz.exceptions import UnknownTimeZoneError
+from hc.accounts.models import Department, Member, User
 
 
 # from itertools recipes:
@@ -46,9 +47,48 @@ def my_checks(request):
     else:
         filtered_checks = [check for check in checks if check.get_status()
                            == check_filter]
+
+    access_list = []
+    show_departments = []
+    show_team_members = []
+
+    team_admin_present = False
+
+    if Member.objects.filter(team=request.user.profile.current_team):
+
+        checkmatrix = CheckMatrix.objects.filter(user_ref=request.user.profile.user_id)
+
+        for matrix in checkmatrix:
+            access_list.append(matrix.check_ref_id)
+
+        team_admin_present = True
+
     counter = Counter()
     down_tags, grace_tags = set(), set()
     for check in filtered_checks:
+
+        # Add access attribute, used in template to check if the user can access the check
+        if check.id in access_list or request.user.profile.team_access_allowed is True:
+            check.access = 1
+        else:
+            check.access = 0
+
+        try:
+
+            department = check.get_depatment_name_for_check(check.department_assigned_id)
+
+            check.department_assigned_id = department
+
+            for member in Member.objects.filter(department_id=department.id).select_related('department'):
+                show_team_members.append(member)
+
+        except:
+
+            check.department_assigned_id = {"name": "<Unassigned>"}
+
+            for member in Member.objects.filter(team_id=request.team.user.id):
+                show_team_members.append(member)
+
         status = check.get_status()
         for tag in check.tags_list():
             if tag == "":
@@ -61,8 +101,13 @@ def my_checks(request):
             elif check.in_grace_period():
                 grace_tags.add(tag)
 
+    for name in Department.objects.filter(user=request.team.user):
+        show_departments.append(name)
     ctx = {
         "page": "checks",
+        "departments": show_departments,
+        "team_admin_present": team_admin_present,
+        "team_members": show_team_members,
         "checks": filtered_checks,
         "now": timezone.now(),
         "tags": counter.most_common(),
@@ -74,6 +119,29 @@ def my_checks(request):
     }
 
     return render(request, "front/my_checks.html", ctx)
+
+@login_required
+@uuid_or_400
+def owners_of_checks(request, code):
+
+    check = get_object_or_404(Check, code=code)
+
+    if check.user_id != request.team.user.id:
+        return HttpResponseForbidden()
+
+    owners = []
+
+    assigned_details = check.get_assigned_owners(check.id)
+
+    for owner in assigned_details:
+        owners.append(owner.user_ref.email)
+
+    ctx = {
+        "check": check,
+        "owners": owners,
+        "assigned_owner": assigned_details
+    }
+    return render(request, "front/owners_of_check.html", ctx)
 
 
 def _welcome_check(request):
@@ -166,6 +234,28 @@ def update_name(request, code):
     if form.is_valid():
         check.name = form.cleaned_data["name"]
         check.tags = form.cleaned_data["tags"]
+
+        if request.user.profile.team_access_allowed is True:
+
+            if form.data["chosen_department"] != "-1":
+
+                try:
+                    check.department_assigned_id = int(form.data["chosen_department"])
+
+                except:
+                    raise TypeError("Department supplied should be a number")
+
+            else:
+                if not check.department_assigned_id:
+                    check.department_assigned_id = None
+
+            chosen_members = request.POST.getlist('chosen_members')
+
+            for member_id in chosen_members:
+                exisiting_member = get_object_or_404(User, id=member_id)
+
+                check.assign_check(exisiting_member)
+
         check.save()
 
     return redirect("hc-checks")
