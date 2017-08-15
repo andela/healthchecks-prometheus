@@ -28,6 +28,13 @@ $(function() {
         return false;
     });
 
+    $("#verify_modal").click(function () {
+        $("#phone").val(this.dataset.phone);
+        $("#phone_code").val(this.dataset.phone_code);
+        $("#code").val(this.dataset.code);
+        $("#verify-form-modal").modal("show");
+    })
+
     var $cm = $("#checks-modal");
     $cm.on("click", "#toggle-all", function() {
         var value = $(this).prop("checked");
