@@ -1,6 +1,7 @@
 import time
 from threading import Thread
 
+import schedule
 from django.core.management.base import BaseCommand
 from django.db import connection
 from django.utils import timezone
@@ -9,12 +10,46 @@ from hc.api.models import Check
 
 def notify(check_id, stdout):
     check = Check.objects.get(id=check_id)
-
     tmpl = "\nSending alert, status=%s, code=%s\n"
     stdout.write(tmpl % (check.status, check.code))
-    errors = check.send_alert()
-    for ch, error in errors:
-        stdout.write("ERROR: %s %s %s\n" % (ch.kind, ch.value, error))
+    if (timezone.now() - check.last_ping) < (check.grace + check.timeout):
+        check.nagging = False
+        check.save()
+        check = Check.objects.get(id=check_id)
+        errors = check.send_alert()
+        for ch, error in errors:
+            stdout.write("ERROR: %s %s %s\n" % (ch.kind, ch.value, error))
+    if (timezone.now() - check.last_ping) > (check.grace + check.timeout):
+        check.nagging = False
+        check.save()
+        check = Check.objects.get(id=check_id)
+        errors = check.send_alert()
+        for ch, error in errors:
+            stdout.write("ERROR: %s %s %s\n" % (ch.kind, ch.value, error))
+        user_nagging(check_id)
+
+
+
+
+def get_sec(time_str):
+    time_str = str(time_str)
+    h, m, s = time_str.split(':')
+    return int(h) * 3600 + int(m) * 60 + int(s)
+
+
+def user_nagging(check_id):
+    check = Check.objects.get(id=check_id)
+    down_period = check.grace + check.timeout + check.nag_time
+
+    schedule.every(get_sec(str(check.nag_time))).seconds.do(check.send_alert).tag('nag_user')
+    while (timezone.now() - check.last_ping) > (check.grace + check.timeout):
+        if (timezone.now() - check.last_ping) > down_period:
+            check = Check.objects.get(id=check_id)
+            check.nagging = True
+            check.save()
+            schedule.run_pending()
+
+        time.sleep(1)
 
 
 def notify_on_thread(check_id, stdout):
