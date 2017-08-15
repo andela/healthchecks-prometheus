@@ -21,6 +21,14 @@ STATUSES = (
     ("new", "New"),
     ("paused", "Paused")
 )
+
+STATUS = (
+    ("up", "Up"),
+    ("down", "Down"),
+    ("new", "New"),
+    ("nag", "Nag")
+)
+
 DEFAULT_TIMEOUT = td(days=1)
 DEFAULT_GRACE = td(hours=1)
 CHECK_KINDS = (("simple", "Simple"),
@@ -47,7 +55,6 @@ PO_PRIORITIES = {
 
 
 class Check(models.Model):
-
     class Meta:
         # sendalerts command will query using these
         index_together = ["status", "user", "alert_after"]
@@ -67,6 +74,8 @@ class Check(models.Model):
     last_ping = models.DateTimeField(null=True, blank=True)
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
+    nag_time = models.DurationField(default=td(hours=1))
+    nagging = models.BooleanField(default=False)
 
     def name_then_code(self):
         if self.name:
@@ -83,6 +92,11 @@ class Check(models.Model):
     def email(self):
         return "%s@%s" % (self.code, settings.PING_EMAIL_DOMAIN)
 
+    @staticmethod
+    def get_sec(time_str):
+        h, m, s = time_str.split(':')
+        return int(h) * 3600 + int(m) * 60 + int(s)
+
     def send_alert(self):
         if self.status not in ("up", "down"):
             raise NotImplementedError("Unexpected status: %s" % self.status)
@@ -94,6 +108,9 @@ class Check(models.Model):
                 errors.append((channel, error))
 
         return errors
+
+    def get_nagging_status(self):
+        return self.nagging
 
     def get_grace_start(self):
         """ Return the datetime when grace period starts. """
