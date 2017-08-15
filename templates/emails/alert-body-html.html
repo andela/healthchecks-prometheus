@@ -6,8 +6,13 @@ Hello,<br />
 
 This is a notification sent by <a href="{% site_root %}">{% site_name %}</a>.
 <br />
+{% if nag_status  %}
+This is a reminder that check <strong>{{ check.name_then_code }}</strong>
+has gone <strong>{{ check.status|upper }}</strong>.
+{% else %}
 The check <strong>{{ check.name_then_code }}</strong>
 has gone <strong>{{ check.status|upper }}</strong>.
+{% endif %}
 <br /><br />
 
 Here is a summary of all your checks:
