@@ -30,13 +30,13 @@ def notify(check_id, stdout):
 
 
 
-
+# convert time to seconds
 def get_sec(time_str):
     time_str = str(time_str)
     h, m, s = time_str.split(':')
     return int(h) * 3600 + int(m) * 60 + int(s)
 
-
+# function to do nag operations
 def user_nagging(check_id):
     check = Check.objects.get(id=check_id)
     down_period = check.grace + check.timeout + check.nag_time
