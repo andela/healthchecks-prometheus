@@ -4,6 +4,7 @@ from django.utils import timezone
 import json
 import requests
 from six.moves.urllib.parse import quote
+from twilio.rest import Client
 
 from hc.lib import emails
 
@@ -60,8 +61,28 @@ class Email(Transport):
         emails.alert(self.channel.value, ctx)
 
 
-class HttpTransport(Transport):
+class SMS(Transport):
+    def notify(self, check):
+        phone = self.channel.value
+        if not self.channel.phone_verified:
+            return "Mobile number not verified."
+        if len(phone) == 10:
+            phone = "+254"+"{}".format(str(phone[1:]))
+        else:
+            return "Invalid mobile number"
 
+        account = "AC89e334fb413ad1740e01f612b930a48c"
+        token = "e94db672f585c7448b73a6b049942396"
+        client = Client(account, token)
+
+        msg = "This is a notification sent by {} The check {} has gone {} ".format("healthchecks.io",
+                                                                                   str(check.name),
+                                                                                   str(check.status))
+
+        message = client.messages.create(to=phone, from_="+16194863717",
+                                         body=msg)
+
+class HttpTransport(Transport):
     def request(self, method, url, **kwargs):
         try:
             options = dict(kwargs)
@@ -142,7 +163,6 @@ class HipChat(HttpTransport):
 
 
 class OpsGenie(HttpTransport):
-
     def notify(self, check):
         payload = {
             "apiKey": self.channel.value,
