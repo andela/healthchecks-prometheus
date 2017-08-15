@@ -37,19 +37,48 @@ def pairwise(iterable):
 @login_required
 def my_checks(request):
     check_filter = request.GET.get("status")
+    dept_filter = request.GET.get("department")
     q = Check.objects.filter(user=request.team.user).order_by("created")
     checks = list(q)
     filtered_checks = []
+    
     if check_filter is None:
-        filtered_checks = checks
+        if dept_filter is None or dept_filter == 'All':
+            filtered_checks = checks
+        else:
+            try:
+                department = Department.objects.filter(name=dept_filter).first().name
+                for check in checks:
+                    if check.department_assigned:
+                        if check.department_assigned.name == department:
+                            filtered_checks.append(check)
+                        else:
+                            continue
+                    else:
+                        continue
+            
+            except Exception as e:
+                filtered_checks = checks
     elif check_filter == 'all':
-        filtered_checks = checks
+        if dept_filter is None:
+            filtered_checks = checks
+        else:
+            try:
+                department = Department.objects.filter(name=dept_filter).first().name
+                filtered_checks = [check for check in checks if check.department_assigned.name == department]
+            except:
+                filtered_checks = checks
     else:
         filtered_checks = [check for check in checks if check.get_status()
                            == check_filter]
+        if dept_filter:
+            try:
+                department = Department.objects.filter(name=dept_filter).first().name
+                filtered_checks = [check for check in filtered_checks if check.get_depatment().name == department]
+            except:
+                pass
 
     access_list = []
-    show_departments = []
     show_team_members = []
 
     team_admin_present = False
@@ -101,11 +130,10 @@ def my_checks(request):
             elif check.in_grace_period():
                 grace_tags.add(tag)
 
-    for name in Department.objects.filter(user=request.team.user):
-        show_departments.append(name)
+    departments = Department.objects.all()
     ctx = {
         "page": "checks",
-        "departments": show_departments,
+        "departments": departments,
         "team_admin_present": team_admin_present,
         "team_members": show_team_members,
         "checks": filtered_checks,
