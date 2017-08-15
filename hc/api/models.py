@@ -75,6 +75,7 @@ class Check(models.Model):
     last_ping = models.DateTimeField(null=True, blank=True)
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
+<<<<<<< HEAD
     department_assigned = models.ForeignKey(Department, blank=True, null=True)
 
     def assign_check(self, user):
@@ -88,6 +89,8 @@ class Check(models.Model):
 
     def get_depatment_name_for_check(self, department_id):
         return Department.objects.get(id=department_id)
+=======
+>>>>>>> develop
     nag_time = models.DurationField(default=td(hours=1))
     nagging = models.BooleanField(default=False)
 

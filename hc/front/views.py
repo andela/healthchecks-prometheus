@@ -27,6 +27,7 @@ from hc.accounts.models import Department, Member, User
 
 
 
+
 # from itertools recipes:
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
