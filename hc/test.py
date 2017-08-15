@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from hc.accounts.models import Member, Profile
+from hc.accounts.models import Member, Profile, Department
 
 
 class BaseTestCase(TestCase):
@@ -18,6 +18,11 @@ class BaseTestCase(TestCase):
         self.profile.team_access_allowed = True
         self.profile.save()
 
+        self.department1 = Department(name="Sales", user=self.alice)
+        self.department2 = Department(name="Engineering", user=self.alice)
+        self.department1.save()
+        self.department2.save()
+
         # Bob is on Alice's team and should have access to her stuff
         self.bob = User(username="bob", email="bob@example.org")
         self.bob.set_password("password")
@@ -27,7 +32,7 @@ class BaseTestCase(TestCase):
         self.bobs_profile.current_team = self.profile
         self.bobs_profile.save()
 
-        m = Member(team=self.profile, user=self.bob)
+        m = Member(team=self.profile, user=self.bob, department=self.department1)
         m.save()
 
         # Charlie should have no access to Alice's stuff
