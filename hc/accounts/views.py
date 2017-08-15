@@ -13,8 +13,8 @@ from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
                                RemoveTeamMemberForm, ReportSettingsForm,
-                               SetPasswordForm, TeamNameForm)
-from hc.accounts.models import Profile, Member
+                               SetPasswordForm, TeamNameForm, DepartmentNameForm)
+from hc.accounts.models import Profile, Member, Department
 from hc.api.models import Channel, Check
 from hc.lib.badges import get_badge_url
 
@@ -145,6 +145,8 @@ def profile(request):
         profile.current_team_id = profile.id
         profile.save()
 
+    department = Department()
+
     show_api_key = False
     if request.method == "POST":
         if "set_password" in request.POST:
@@ -188,12 +190,19 @@ def profile(request):
             if form.is_valid():
 
                 email = form.cleaned_data["email"]
+                department_id = form.data['chosen_department']
                 try:
                     user = User.objects.get(email=email)
                 except User.DoesNotExist:
                     user = _make_user(email)
 
-                profile.invite(user)
+                try:
+                    department = Department.objects.get(id=department_id)
+                except Department.DoesNotExist:
+                    messages.success(request, "That Department has not been added")
+
+                profile.invite(user, department)
+
                 messages.success(request, "Invitation to %s sent!" % email)
         elif "remove_team_member" in request.POST:
             form = RemoveTeamMemberForm(request.POST)
@@ -218,6 +227,17 @@ def profile(request):
                 profile.save()
                 messages.success(request, "Team Name updated!")
 
+        elif "set_department" in request.POST:
+            if not profile.team_access_allowed:
+                return HttpResponseForbidden()
+
+            form = DepartmentNameForm(request.POST)
+            if form.is_valid():
+                department.name = form.cleaned_data['department_name']
+                department.user_id = request.team.user.id
+                department.save()
+                messages.success(request, department.name+" Department Add Successfully")
+
     tags = set()
     for check in Check.objects.filter(user=request.team.user):
         tags.update(check.tags_list())
@@ -230,11 +250,16 @@ def profile(request):
 
         badge_urls.append(get_badge_url(username, tag))
 
+    show_departments = []
+    for name in Department.objects.filter(user=request.team.user):
+        show_departments.append(name)
+
     ctx = {
         "page": "profile",
         "badge_urls": badge_urls,
         "profile": profile,
-        "show_api_key": show_api_key
+        "show_api_key": show_api_key,
+        "departments": show_departments
     }
 
     return render(request, "accounts/profile.html", ctx)
