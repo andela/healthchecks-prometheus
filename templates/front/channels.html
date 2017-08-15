@@ -29,6 +29,7 @@
             <td>
             {% if ch.kind == "email" %} Email
             {% elif ch.kind == "webhook" %} Webhook
+            {% elif ch.kind == "sms" %} SMS
             {% elif ch.kind == "slack" %} Slack
             {% elif ch.kind == "hipchat" %} HipChat
             {% elif ch.kind == "pd" %} PagerDuty
@@ -43,6 +44,12 @@
                     <span class="preposition">to</span>
                     {{ ch.value }}
                     {% if not ch.email_verified %}
+                        <span class="channel-unconfirmed">(unconfirmed)</span>
+                    {% endif %}
+                {% elif ch.kind == "sms" %}
+                    <span class="preposition">to</span>
+                    {{ ch.value }}
+                    {% if not ch.phone_verified %}
                         <span class="channel-unconfirmed">(unconfirmed)</span>
                     {% endif %}
                 {% elif ch.kind == "pd" %}
@@ -121,6 +128,14 @@
                     type="button">
                     <span class="icon-delete"></span>
                 </button>
+                {% if ch.kind == "sms" %}
+                    {% if not ch.phone_verified %}
+                            <a id="verify_modal" data-phone="{{ ch.value }}"
+                               data-phone_code="{{ ch.phone_code }}"
+                               data-code="{{ ch.code }}"
+                               class="btn btn-group-sm btn-success">Verify now</a>
+                    {% endif %}
+                {% endif %}
             </td>
             <td>
 
@@ -132,7 +147,7 @@
 
 
     <h1 class="ai-title">Add More</h1>
-    <ul class="add-integration">
+   <ul class="add-integration">
         <li>
             <img src="{% static 'img/integrations/slack.png' %}"
                 class="icon" alt="Slack icon" />
@@ -140,6 +155,14 @@
             <h2>Slack</h2>
             <p>A messaging app for teams.</p>
             <a href="{% url 'hc-add-slack' %}" class="btn btn-primary">Add Integration</a>
+        </li>
+        <li>
+            <img src="{% static 'img/integrations/sms.jpg' %}"
+                class="icon" alt="sms icon" />
+
+            <h2>SMS</h2>
+            <p>Get an sms when check goes up or down.</p>
+            <a href="{% url 'hc-add-sms' %}" class="btn btn-primary">Add Integration</a>
         </li>
         <li>
             <img src="{% static 'img/integrations/email.png' %}"
@@ -273,6 +296,32 @@
         </form>
     </div>
 </div>
+
+<div id="verify-form-modal" class="modal">
+    <div class="modal-dialog">
+        <form method="post" action="{% url 'hc-verify-phone' %}">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4><b>PHONE VERIFICATION</b></h4>
+                </div>
+                <div class="modal-body">
+                    <label for="code">Verification code here</label>
+                    <input type="text" id="verify_code" required name="verify_code" class="form-group" style="max-width: 100px;">
+                    <input type="hidden" name="phone" id="phone" value="">
+                    <input type="hidden" name="phone_code" id="phone_code" value="">
+                    <input type="hidden" name="code" id="code" value="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Verify Phone</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 {% endblock %}
 
