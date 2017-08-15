@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 from hc.api import transports
 from hc.lib import emails
+from hc.accounts.models import Department
 
 STATUSES = (
     ("up", "Up"),
@@ -67,6 +68,19 @@ class Check(models.Model):
     last_ping = models.DateTimeField(null=True, blank=True)
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
+    department_assigned = models.ForeignKey(Department, blank=True, null=True)
+
+    def assign_check(self, user):
+        if not CheckMatrix.objects.filter(check_ref=self, user_ref=user).count():
+            access_role = CheckMatrix.objects.create(check_ref=self, user_ref=user)
+            access_role.save()
+
+    @staticmethod
+    def get_assigned_owners(check_id):
+        return CheckMatrix.objects.select_related('user_ref').filter(check_ref_id=check_id)
+
+    def get_depatment_name_for_check(self, department_id):
+        return Department.objects.get(id=department_id)
 
     def name_then_code(self):
         if self.name:
@@ -349,3 +363,11 @@ class Notification(models.Model):
     channel = models.ForeignKey(Channel)
     created = models.DateTimeField(auto_now_add=True)
     error = models.CharField(max_length=200, blank=True)
+
+
+class CheckMatrix(models.Model):
+    check_ref = models.ForeignKey(Check, blank=False)
+    user_ref = models.ForeignKey(User, blank=False)
+
+    def __str__(self):
+        return "{} uses => {}".format(self.user_ref, self.check_ref)
