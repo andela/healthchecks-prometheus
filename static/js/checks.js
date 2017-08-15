@@ -4,6 +4,7 @@ $(function () {
         $("#update-name-form").attr("action", this.dataset.url);
         $("#update-name-input").val(this.dataset.name);
         $("#update-tags-input").val(this.dataset.tags);
+        $("#current_department").html(this.dataset.department);
         $('#update-name-modal').modal("show");
         $("#update-name-input").focus();
 
@@ -172,6 +173,12 @@ $(function () {
         $('#remove-check-modal').modal("show");
 
         return false;
+    });
+
+    $('#chosen_members').selectize({
+        persist: false,
+        maxItems: null,
+
     });
 
 
