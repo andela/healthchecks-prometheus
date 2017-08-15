@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 from hc.api import transports
 from hc.lib import emails
+from twilio.rest import Client
 
 STATUSES = (
     ("up", "Up"),
@@ -27,6 +28,7 @@ CHECK_KINDS = (("simple", "Simple"),
                ("cron", "Cron"))
 
 CHANNEL_KINDS = (("email", "Email"),
+                 ("sms", "Sms"),
                  ("webhook", "Webhook"),
                  ("hipchat", "HipChat"),
                  ("slack", "Slack"),
@@ -212,6 +214,8 @@ class Channel(models.Model):
     kind = models.CharField(max_length=20, choices=CHANNEL_KINDS)
     value = models.TextField(blank=True)
     email_verified = models.BooleanField(default=False)
+    phone_verified = models.BooleanField(default=False)
+    phone_code = models.TextField(max_length=4, null=True)
     checks = models.ManyToManyField(Check)
 
     def assign_all_checks(self):
@@ -229,10 +233,28 @@ class Channel(models.Model):
         verify_link = settings.SITE_ROOT + verify_link
         emails.verify_email(self.value, {"verify_link": verify_link})
 
+    def verify_phone(self):
+        phone = self.value
+        if len(phone) == 10:
+            phone = "+254"+"{}".format(str(phone[1:]))
+            account = "AC89e334fb413ad1740e01f612b930a48c"
+            token = "e94db672f585c7448b73a6b049942396"
+            client = Client(account, token)
+
+            msg = "This is a notification sent by {}. Use code: {} to verify your number.".format("healthchecks.io",
+                                                                                              self.phone_code)
+
+            print("MESSAGE ", msg)
+            message = client.messages.create(to=phone, from_="+16194863717",
+                                             body=msg)
+
+
     @property
     def transport(self):
         if self.kind == "email":
             return transports.Email(self)
+        elif self.kind == "sms":
+            return transports.SMS(self)
         elif self.kind == "webhook":
             return transports.Webhook(self)
         elif self.kind == "slack":
