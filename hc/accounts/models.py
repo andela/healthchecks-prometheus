@@ -13,6 +13,14 @@ from django.utils import timezone
 from hc.lib import emails
 
 
+class Department(models.Model):
+    name = models.CharField(max_length=200, blank=False)
+    user = models.ForeignKey(User, blank=True, null=True)
+
+    def __repr__(self):
+        return "{} => {}".format(self.name, self.user.id)
+
+
 class Profile(models.Model):
     # Owner:
     user = models.OneToOneField(User, blank=True, null=True)
@@ -85,8 +93,8 @@ class Profile(models.Model):
 
         emails.report(self.user.email, ctx)
 
-    def invite(self, user):
-        member = Member(team=self, user=user)
+    def invite(self, user, department):
+        member = Member(team=self, user=user, department=department)
         member.save()
 
         # Switch the invited user over to the new team so they
@@ -100,3 +108,4 @@ class Profile(models.Model):
 class Member(models.Model):
     team = models.ForeignKey(Profile)
     user = models.ForeignKey(User)
+    department = models.ForeignKey(Department, blank=True, null=True)

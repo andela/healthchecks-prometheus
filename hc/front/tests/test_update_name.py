@@ -11,7 +11,7 @@ class UpdateNameTestCase(BaseTestCase):
 
     def test_it_works(self):
         url = "/checks/%s/name/" % self.check.code
-        payload = {"name": "Alice Was Here"}
+        payload = {"name": "Alice Was Here", "chosen_department": self.department1.id}
 
         self.client.login(username="alice@example.org", password="password")
         r = self.client.post(url, data=payload)
@@ -59,7 +59,7 @@ class UpdateNameTestCase(BaseTestCase):
 
     def test_it_sanitizes_tags(self):
         url = "/checks/%s/name/" % self.check.code
-        payload = {"tags": "  foo  bar\r\t \n  baz \n"}
+        payload = {"tags": "  foo  bar\r\t \n  baz \n", "chosen_department": self.department1.id}
 
         self.client.login(username="alice@example.org", password="password")
         self.client.post(url, data=payload)

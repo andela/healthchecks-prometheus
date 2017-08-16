@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load compress staticfiles hc_extras %}
+
+{% block title %}My Checks - {% site_name %}{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        <h1>Owners of {{ check.name }} Check</h1>
+        <br />
+        {% if assigned_owner %}
+        <table class="table hidden-xs">
+            <thead>
+                <th>Email</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {% for owner in assigned_owner %}
+                    <tr>
+                        <td>{{ owner.user_ref.email }}</td>
+                        <td><a href="#">Remove this owner</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p class="alert alert-info"> No Users Assigned To This Check</p>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{% compress js %}
+<script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/selectize.min.js' %}"></script>
+<script src="{% static 'js/nouislider.min.js' %}"></script>
+<script src="{% static 'js/clipboard.min.js' %}"></script>
+<script src="{% static 'js/snippet-copy.js' %}"></script>
+<script src="{% static 'js/checks.js' %}"></script>
+{% endcompress %}
+{% endblock %}

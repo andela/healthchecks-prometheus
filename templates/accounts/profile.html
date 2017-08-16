@@ -157,7 +157,51 @@
         </div>
     </div>
 </div>
+{% if profile.team_access_allowed %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+        <div class="panel-body settings-block">
+        <h2 class="settings-title">Departments</h2>
+        {% if departments %}
+        <table class="table">
+            <tr>
+                <td><b>Name</b></td>
+                <td></td>
+            </tr>
+            {% for department in departments %}
+            <tr>
+                <td>{{ department.name }} </td>
+                <td>
+                    <a
+                        href="#"
+                        data-department="{{ department.id }}"
+                        class="pull-right">Remove</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+        <p id="badges-description">
+            You can add various departments to your team
+        </p>
+            <form id="add-department-form" method="POST">
+                {% csrf_token %}
+                <div id="department_name">
+                <input type="text" class="form-control" name="department_name" placeholder="e.g Sales">
+                </div>
+                <button
+                    type="submit"
+                    name="set_department"
+                    class="btn btn-primary">Add Department</button>
+            </form>
 
+
+    </div>
+    </div>
+    </div>
+</div>
+{% endif %}
 {% if badge_urls %}
 <div class="row">
     <div class="col-sm-12">
@@ -270,6 +314,20 @@
                                 id="itm-email"
                                 name="email"
                                 placeholder="friend@example.org">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="itm-email" class="col-sm-2 control-label" >Department</label>
+                        <div class="col-sm-9">
+                            <select class="custom-select" name="chosen_department">
+                                <option selected>Select Department for team member</option>
+
+                                {% if departments %}
+                                    {% for department in departments %}
+                                        <option value="{{ department.id }}">{{ department.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
                         </div>
                     </div>
                 </div>

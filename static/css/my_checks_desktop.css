@@ -34,6 +34,12 @@ table.table tr > th.th-name {
     display: block;
 }
 
+#checks-table .my-checks-name-no{
+    border: 1px solid rgba(0, 0, 0, 0);
+    padding: 6px;
+    display: block;
+}
+
 #checks-table tr:hover .my-checks-name {
     border: 1px dotted #AAA;
 }

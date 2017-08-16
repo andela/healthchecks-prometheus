@@ -1,9 +1,10 @@
 from django.core import mail
 
 from hc.test import BaseTestCase
-from hc.accounts.models import Member
+from hc.accounts.models import Member, Department
 from hc.api.models import Check
 from django.conf import settings
+import sys
 
 
 class ProfileTestCase(BaseTestCase):
@@ -62,7 +63,11 @@ class ProfileTestCase(BaseTestCase):
     def test_it_adds_team_member(self):
         self.client.login(username="alice@example.org", password="password")
 
-        form = {"invite_team_member": "1", "email": "frank@example.org"}
+        self.department1 = Department(name="Sales", user=self.alice)
+        self.department1.save()
+
+        form = {"invite_team_member": "1", "email": "frank@example.org",
+                "chosen_department": self.department1.id}
         r = self.client.post("/accounts/profile/", form)
         assert r.status_code == 200
 

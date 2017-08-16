@@ -8,6 +8,7 @@ check_urls = [
     url(r'^pause/$', views.pause, name="hc-pause"),
     url(r'^remove/$', views.remove_check, name="hc-remove-check"),
     url(r'^log/$', views.log, name="hc-log"),
+    url(r'^owners/$', views.owners_of_checks, name="hc-check-owners")
 ]
 
 channel_urls = [
