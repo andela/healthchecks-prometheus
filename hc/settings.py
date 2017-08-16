@@ -123,7 +123,8 @@ USE_L10N = True
 
 USE_TZ = True
 
-SITE_ROOT = "https://demo-healthchecks.herokuapp.com"
+SITE_ROOT = "http://localhost:8000"
+# SITE_ROOT = "https://demo-healthchecks.herokuapp.com"
 SITE_NAME = "healthchecks.io"
 PING_ENDPOINT = SITE_ROOT + "/ping/"
 PING_EMAIL_DOMAIN = HOST
@@ -139,7 +140,7 @@ COMPRESS_OFFLINE = True
 
 #EMAIL_BACKEND = "djmail.backends.default.EmailBackend"
 EMAIL_BACKEND = "sgbackend.SendGridBackend"
-SENDGRID_API_KEY = "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"
+SENDGRID_API_KEY = "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"
 
 # Discord integration -- override these in local_settings
 DISCORD_CLIENT_ID = None

@@ -26,6 +26,8 @@ def ping(request, code):
     check.alert_after = check.get_alert_after()
     if check.status in ("new", "paused"):
         check.status = "up"
+    else:
+        early = check.check_job_runs_early()
 
     check.save()
     check.refresh_from_db()
