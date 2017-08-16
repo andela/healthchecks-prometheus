@@ -28,6 +28,8 @@
                 <span class="status icon-mail"></span>
             {% elif check.get_status == "down" %}
                 <span class="status icon-down"></span>
+            {% elif check.get_status == "early" %}
+                <span class="status icon-early"></span>
             {% endif %}
         </td>
         <td class="name-cell">
