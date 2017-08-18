@@ -139,7 +139,7 @@ COMPRESS_OFFLINE = True
 
 #EMAIL_BACKEND = "djmail.backends.default.EmailBackend"
 EMAIL_BACKEND = "sgbackend.SendGridBackend"
-SENDGRID_API_KEY = "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"
+SENDGRID_API_KEY = "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"
 
 # Discord integration -- override these in local_settings
 DISCORD_CLIENT_ID = None
