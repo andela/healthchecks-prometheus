@@ -19,8 +19,18 @@
 
 #pitch {
     text-align: center;
-    padding: 100px 0;
+    padding: 50px 0;
     margin: 0;
+    color: #156b2d;
+    font-weight: bold;
+}
+#pitch-smaller {
+    text-align: center;
+    padding: 30px 0;
+    margin: 0;
+    color: #156b2d;
+    font-weight: bold;
+    font-size:14px;
 }
 
 #pitch-subtitle {
@@ -90,4 +100,7 @@
 
 .tab-pane.tab-pane-email {
   border: none;
+}
+#setup{
+    padding-bottom: 30px;
 }

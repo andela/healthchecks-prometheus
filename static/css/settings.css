@@ -21,3 +21,9 @@
 #department_name{
     padding-bottom:10px;
 }
+
+.center-block1 {
+        display: block;
+        margin: 0 auto;
+    margin-left:17%;
+}
