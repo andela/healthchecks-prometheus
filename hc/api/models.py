@@ -20,14 +20,15 @@ STATUSES = (
     ("up", "Up"),
     ("down", "Down"),
     ("new", "New"),
-    ("paused", "Paused")
+    ("paused", "Paused"),
+    ("early", "Early")
 )
 
 STATUS = (
     ("up", "Up"),
     ("down", "Down"),
     ("new", "New"),
-    ("nag", "Nag")
+    ("nag", "Nag"),
 )
 
 DEFAULT_TIMEOUT = td(days=1)
@@ -112,7 +113,7 @@ class Check(models.Model):
         return int(h) * 3600 + int(m) * 60 + int(s)
 
     def send_alert(self):
-        if self.status not in ("up", "down"):
+        if self.status not in ("up", "down", "nag", "early"):
             raise NotImplementedError("Unexpected status: %s" % self.status)
 
         errors = []
@@ -140,10 +141,19 @@ class Check(models.Model):
             next_naive = it.get_next(datetime)
             return timezone.make_aware(next_naive, is_dst=False)
 
+    def check_job_runs_early(self):
+        if timezone.now() - self.last_ping < self.timeout - self.grace:
+            self.status = "early"
+            self.save()
+            self.refresh_from_db()
+            self.send_alert()
+        else:
+            pass
+
     def get_status(self, now=None):
         """ Return "up" if the check is up or in grace, otherwise "down". """
 
-        if self.status in ("new", "paused"):
+        if self.status in ("new", "paused", "early"):
             return self.status
 
         if now is None:
