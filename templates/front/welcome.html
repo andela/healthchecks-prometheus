@@ -6,100 +6,25 @@
 <div class="container">
     <div class="row">
     <div class="col-sm-12">
-        <h1 id="pitch">Cron Monitoring. Get Notified When Your Cron Jobs Fail.</h1>
+        <h1 id="pitch" class="typed-pitch"></h1>
     </div>
     </div>
+    <div class="row" style="">
+         <div class="col-md-8 center-block-pitch" style="">
+            <img
+                class="img-responsive"
+                src="{% static 'img/my_checks@2x.png' %}"
 
-    <div class="row">
-    <div class="col-sm-6 col-sm-push-6">
-        <p id="pitch-text">Make a HTTP GET request to this address from your cron job, daemon, script or long running task.
-        <strong>When this address is not requested for a set time period, you will get alerted.</strong> Below are snippets that are ready to be copy/pasted into your own scripts.</p>
-    </div>
-    <div class="col-sm-6 col-sm-pull-6">
-        <h2 id="pitch-subtitle">Here's an unique ping address for you:</h2>
-        <div id="pitch-url">
-            <input
-                id="pitch-url-input"
-                class="form-control"
-                type="text"
-                value="{{ ping_url }}"
-                readonly />
-        </div>
-    </div>
-    </div>
-
-
-    <div class="row">
-        <div class="col-sm-12">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="active">
-                    <a href="#crontab" data-toggle="tab">Crontab</a>
-                </li>
-                <li>
-                    <a href="#bash" data-toggle="tab">Bash</a>
-                </li>
-                <li>
-                    <a href="#python" data-toggle="tab">Python</a>
-                </li>
-                <li class="hidden-xs">
-                    <a href="#node" data-toggle="tab">Node.js</a>
-                </li>
-                <li class="hidden-xs">
-                    <a href="#php" data-toggle="tab">PHP</a>
-                </li>
-                <li class="hidden-xs">
-                    <a href="#browser" data-toggle="tab">Browser</a>
-                </li>
-                <li class="hidden-xs">
-                    <a href="#powershell" data-toggle="tab">PowerShell</a>
-                </li>
-                <li class="hidden-xs">
-                    <a href="#email" data-toggle="tab">Email</a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                <div role="tabpanel" class="tab-pane active" id="crontab">
-                    {% include "front/snippets/crontab.html" %}
-                </div>
-                <div role="tabpanel" class="tab-pane" id="bash">
-                    {% include "front/snippets/bash_curl.html" %}
-                    {% include "front/snippets/bash_wget.html" %}
-                </div>
-                <div role="tabpanel" class="tab-pane" id="python">
-                    {% include "front/snippets/python_urllib2.html" %}
-                    {% include "front/snippets/python_requests.html" %}
-                </div>
-                <div role="tabpanel" class="tab-pane" id="node">
-                    {% include "front/snippets/node.html" %}
-                </div>
-                <div role="tabpanel" class="tab-pane" id="php">
-                    {% include "front/snippets/php.html" %}
-                </div>
-                <div class="tab-pane" id="browser">
-                    {% include "front/snippets/browser.html" %}
-                </div>
-                <div class="tab-pane" id="powershell">
-                    {% include "front/snippets/powershell.html" %}
-                </div>
-                <div class="tab-pane tab-pane-email" id="email">
-                    <p>
-                        As an alternative to HTTP/HTTPS requests,
-                        you can "ping" this check by sending an
-                        email message to
-                        <a href="mailto:{{ check.email }}">{{ check.email }}</a>
-                    </p>
-                </div>
-            </div>
+                alt="My Checks page" />
         </div>
     </div>
 </div>
 </div>
-
 <div class="get-started-bleed">
 <div class="container">
     <div class="row">
         <div id="get-started" class="col-sm-6 col-sm-offset-3">
-            <h2>E-mail Address to Receive Alerts:</h2>
+            <h2>Sign Up Here For HealthChecks To Send You Alerts:</h2>
             <form action="{% url 'hc-login' %}" method="post">
                 {% csrf_token %}
 
@@ -111,7 +36,7 @@
                             class="form-control"
                             name="email"
                             autocomplete="email"
-                            placeholder="Email">
+                            placeholder="Email Address">
                     </div>
                 </div>
 
@@ -126,11 +51,133 @@
     </div>
 </div>
 </div>
+<div class="get-started-bleed">
+    <div class="container">
+        <h2 class="tour-title text-center">How HealthChecks Works</h2>
+        <div class="row">
+            <div class="col-sm-6">
+                <img
+                    class="img-responsive"
+                    src="{% static 'img/period_grace@2x.png' %}"
+                    srcset="{% static 'img/period_grace.png'%} 1x, {% static 'img/period_grace@2x.png'%} 2x"
+                    alt="My Checks page" />
+            </div>
+            <div class="col-sm-6">
+                <h2><b>Create Your Checks Easily</b></h2>
+                <p>
+                    HealthChecks allows simple and intuitive creation of scheduled tasks with its
+                    simple User Interface
+                </p>
+                <p>
+                    Set Timeout and grace periods very quickly
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="get-started-bleed">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <img
+                    class="img-responsive"
+                    src="{% static 'img/failed-filter.png' %}"
+                    srcset="{% static 'img/failed-filter.png'%} 1x, {% static 'img/failed-filter.png'%} 2x"
+                    alt="My Checks page" />
+            </div>
+            <div class="col-sm-6">
+                <h2><b>Easy Monitoring</b></h2>
+                <p>
+                    HealthChecks allows you to easily monitor your scheduled checks. Whether a check is
+                    up, has delayed or is completely down, You will be alerted according to the channel you want.
+                </p>
+                <p>
+                    Every check has its own health states and HealthChecks has easy to identify icons
+                    to help monitor your checks
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="get-started-bleed">
+    <div class="container">
+        <div class="row">
+            <div id="get-started" class="col-sm-12 col-sm-offset">
+                <h2 class="text-center" id="setup">After Setting Up Your Cron Job, Link up with HealthChecks</h2>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="active">
+                                <a href="#crontab" data-toggle="tab">Cron Tab</a>
+                            </li>
+                            <li>
+                                <a href="#bash" data-toggle="tab">Bash</a>
+                            </li>
+                            <li>
+                                <a href="#python" data-toggle="tab">Python</a>
+                            </li>
+                            <li class="hidden-xs">
+                                <a href="#node" data-toggle="tab">Node.js</a>
+                            </li>
+                            <li class="hidden-xs">
+                                <a href="#php" data-toggle="tab">PHP</a>
+                            </li>
+                            <li class="hidden-xs">
+                                <a href="#browser" data-toggle="tab">Browser</a>
+                            </li>
+                            <li class="hidden-xs">
+                                <a href="#powershell" data-toggle="tab">PowerShell</a>
+                            </li>
+                            <li class="hidden-xs">
+                                <a href="#email" data-toggle="tab">Email</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="crontab">
+                                {% include "front/snippets/crontab.html" %}
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="bash">
+                                {% include "front/snippets/bash_curl.html" %}
+                                {% include "front/snippets/bash_wget.html" %}
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="python">
+                                {% include "front/snippets/python_urllib2.html" %}
+                                {% include "front/snippets/python_requests.html" %}
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="node">
+                                {% include "front/snippets/node.html" %}
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="php">
+                                {% include "front/snippets/php.html" %}
+                            </div>
+                            <div class="tab-pane" id="browser">
+                                {% include "front/snippets/browser.html" %}
+                            </div>
+                            <div class="tab-pane" id="powershell">
+                                {% include "front/snippets/powershell.html" %}
+                            </div>
+                            <div class="tab-pane tab-pane-email" id="email">
+                                <p>
+                                    As an alternative to HTTP/HTTPS requests,
+                                    you can "ping" this check by sending an
+                                    email message to
+                                    <a href="mailto:{{ check.email }}">{{ check.email }}</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+    </div>
+</div>
 
 <div class="container">
     <div class="row">
     <div class="col-sm-12">
-        <h2 class="tour-title">A quick peek of what's inside:</h2>
+        <h2 class="tour-title">A sneak peak at HealthChecks</h2>
     </div>
     </div>
 
@@ -164,6 +211,8 @@
             alt="Period/Grace Time dialog" />
     </div>
     <div class="col-sm-4">
+        <h2 style="color:#22bc66;font-weight: bold;"></h2>
+
         Each check has configurable <strong>Period</strong> and <strong>Grace Time</strong> parameters.
         Depending on these parameters and time since the last ping, the check is in one of the
         following states:
@@ -306,6 +355,38 @@
     </div>
     </div>
 
+    <div class="row tour-section">
+    <div class="col-sm-8">
+        <img
+            class="img-responsive" width="605" height="605"
+            src="{% static 'img/team_access.png' %}"
+            srcset="{% static 'img/team_access.png'%} 1x, {% static 'img/team_access.png'%} 2x"
+            alt="My Checks page" />
+    </div>
+    <div class="col-sm-4">
+        <p>
+            If at all you need help HealthChecks allows you to add departments and owners of checks via
+            teams
+        </p>
+        <table class="table welcome-integrations">
+            <tr>
+                <td>Gain Team Access and Add various Departments</td>
+            </tr>
+
+            <tr>
+                <td>Invite Team Members to Departments via email</td>
+            </tr>
+
+            <tr>
+                <td>Assign a checks to departments and team members</td>
+            </tr>
+            <tr>
+                <td>Add multiple owners for checks</td>
+            </tr>
+        </table>
+    </div>
+    </div>
+
     <div class="row">
 
     <div class="footer-jumbo-bleed">
@@ -360,5 +441,13 @@
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/clipboard.min.js' %}"></script>
 <script src="{% static 'js/snippet-copy.js' %}"></script>
+<script src="{% static 'js/typed.js' %}"></script>
+<script>
+$("#pitch").typed({
+    strings: ["Cron Job Monitoring For Power Users","The Health State Of Your Cron Job Matters"],
+    typeSpeed: 40
+});
+$(".typed-cursor").hide();
+</script>
 {% endcompress %}
 {% endblock %}
